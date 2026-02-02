@@ -2,6 +2,8 @@
 
 A 2-axis robotic globe controller powered by ESP32 that points a physical globe to any location on Earth via HTTP API.
 
+![RoboGlobe prototype](assets/roboglobe.jpg)
+
 ## Features
 
 - **WiFi Provisioning**: Automatic captive portal for easy WiFi setup
