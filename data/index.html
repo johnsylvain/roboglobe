@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RoboGlobe - Wi-Fi Setup</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 32px;
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        
+        .device-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .device-info strong {
+            color: #333;
+        }
+        
+        .section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #5a6268;
+            box-shadow: 0 8px 20px rgba(108, 117, 125, 0.4);
+        }
+        
+        .network-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .network-item {
+            padding: 16px;
+            border-bottom: 1px solid #e0e0e0;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .network-item:last-child {
+            border-bottom: none;
+        }
+        
+        .network-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .network-item.selected {
+            background-color: #e7f3ff;
+            border-color: #667eea;
+        }
+        
+        .network-info {
+            flex: 1;
+        }
+        
+        .network-name {
+            font-weight: 600;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .network-details {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .network-signal {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .signal-bar {
+            width: 4px;
+            background: #ddd;
+            border-radius: 2px;
+            transition: background 0.2s;
+        }
+        
+        .signal-bar.active {
+            background: #28a745;
+        }
+        
+        .signal-bar:nth-child(1) { height: 8px; }
+        .signal-bar:nth-child(2) { height: 12px; }
+        .signal-bar:nth-child(3) { height: 16px; }
+        .signal-bar:nth-child(4) { height: 20px; }
+        
+        .signal-strong .signal-bar:nth-child(-n+4) { background: #28a745; }
+        .signal-medium .signal-bar:nth-child(-n+3) { background: #ffc107; }
+        .signal-weak .signal-bar:nth-child(-n+2) { background: #dc3545; }
+        
+        .security-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .security-badge.secure {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .security-badge.open {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .password-toggle {
+            position: relative;
+        }
+        
+        .password-toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 4px 8px;
+        }
+        
+        .password-toggle-btn:hover {
+            color: #333;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            display: block;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 640px) {
+            .container {
+                padding: 24px;
+            }
+            
+            h1 {
+                font-size: 28px;
+            }
+            
+            .network-list {
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌍 RoboGlobe</h1>
+            <p class="subtitle">Configure your Wi-Fi connection</p>
+            <div class="device-info" id="deviceInfo">
+                <strong>Device ID:</strong> <span id="deviceId">Loading...</span> | 
+                <strong>IP:</strong> <span id="deviceIP">Loading...</span>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-title">
+                <span>Available Networks</span>
+                <button class="btn btn-secondary" id="scanBtn">
+                    <span class="spinner hidden" id="scanSpinner"></span>
+                    <span id="scanBtnText">Scan</span>
+                </button>
+            </div>
+            
+            <div class="network-list" id="networkList">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📡</div>
+                    <p>Click "Scan" to find available networks</p>
+                </div>
+            </div>
+        </div>
+        
+        <form id="wifiForm">
+            <div class="form-group">
+                <label for="ssid">Wi-Fi Network (SSID)</label>
+                <input type="text" id="ssid" name="ssid" required autocomplete="off" placeholder="Select a network above or enter manually">
+            </div>
+            
+            <div class="form-group password-toggle">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" autocomplete="off" placeholder="Enter password (if required)">
+                <button type="button" class="password-toggle-btn" id="passwordToggle">👁️</button>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn" style="width: 100%;">
+                <span class="spinner hidden" id="submitSpinner"></span>
+                <span id="submitBtnText">Connect</span>
+            </button>
+        </form>
+        
+        <div id="status" class="status"></div>
+    </div>
+    
+    <script>
+        const form = document.getElementById('wifiForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const submitBtnText = document.getElementById('submitBtnText');
+        const submitSpinner = document.getElementById('submitSpinner');
+        const scanBtn = document.getElementById('scanBtn');
+        const scanBtnText = document.getElementById('scanBtnText');
+        const scanSpinner = document.getElementById('scanSpinner');
+        const statusDiv = document.getElementById('status');
+        const networkList = document.getElementById('networkList');
+        const ssidInput = document.getElementById('ssid');
+        const passwordInput = document.getElementById('password');
+        const passwordToggle = document.getElementById('passwordToggle');
+        const deviceIdSpan = document.getElementById('deviceId');
+        const deviceIPSpan = document.getElementById('deviceIP');
+        
+        let selectedNetwork = null;
+        
+        // Load device info
+        async function loadDeviceInfo() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                if (data.ip) {
+                    deviceIPSpan.textContent = data.ip;
+                }
+                // Try to extract device ID from hostname or use IP
+                const hostname = window.location.hostname;
+                if (hostname && hostname !== data.ip) {
+                    deviceIdSpan.textContent = hostname.replace('.local', '');
+                } else {
+                    deviceIdSpan.textContent = data.ip || 'Unknown';
+                }
+            } catch (error) {
+                console.error('Failed to load device info:', error);
+            }
+        }
+        
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = 'status ' + type;
+            statusDiv.style.display = 'block';
+        }
+        
+        function hideStatus() {
+            statusDiv.style.display = 'none';
+        }
+        
+        function setLoading(loading) {
+            if (loading) {
+                submitBtn.disabled = true;
+                submitSpinner.classList.remove('hidden');
+                submitBtnText.textContent = 'Connecting...';
+            } else {
+                submitBtn.disabled = false;
+                submitSpinner.classList.add('hidden');
+                submitBtnText.textContent = 'Connect';
+            }
+        }
+        
+        function setScanning(scanning) {
+            if (scanning) {
+                scanBtn.disabled = true;
+                scanSpinner.classList.remove('hidden');
+                scanBtnText.textContent = 'Scanning...';
+            } else {
+                scanBtn.disabled = false;
+                scanSpinner.classList.add('hidden');
+                scanBtnText.textContent = 'Scan';
+            }
+        }
+        
+        function getSignalStrengthClass(rssi) {
+            if (rssi > -50) return 'signal-strong';
+            if (rssi > -70) return 'signal-medium';
+            return 'signal-weak';
+        }
+        
+        function renderNetworks(networks) {
+            if (!networks || networks.length === 0) {
+                networkList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📡</div>
+                        <p>No networks found. Try scanning again.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort by signal strength (RSSI)
+            networks.sort((a, b) => b.rssi - a.rssi);
+            
+            networkList.innerHTML = networks.map(network => {
+                const signalClass = getSignalStrengthClass(network.rssi);
+                const securityClass = network.encryption ? 'secure' : 'open';
+                const securityText = network.encryption ? network.encryption_type || 'Secure' : 'Open';
+                const isSelected = selectedNetwork && selectedNetwork.ssid === network.ssid;
+                
+                return `
+                    <div class="network-item ${isSelected ? 'selected' : ''}" data-ssid="${escapeHtml(network.ssid)}" data-encrypted="${network.encryption}">
+                        <div class="network-info">
+                            <div class="network-name">${escapeHtml(network.ssid)}</div>
+                            <div class="network-details">
+                                <div class="network-signal ${signalClass}">
+                                    <div class="signal-bar"></div>
+                                    <div class="signal-bar"></div>
+                                    <div class="signal-bar"></div>
+                                    <div class="signal-bar"></div>
+                                </div>
+                                <span>${network.rssi} dBm</span>
+                                <span>•</span>
+                                <span>Ch ${network.channel}</span>
+                                <span>•</span>
+                                <span class="security-badge ${securityClass}">${securityText}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Add click handlers
+            networkList.querySelectorAll('.network-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const ssid = item.dataset.ssid;
+                    const encrypted = item.dataset.encrypted === 'true';
+                    
+                    // Update selected state
+                    networkList.querySelectorAll('.network-item').forEach(i => i.classList.remove('selected'));
+                    item.classList.add('selected');
+                    
+                    // Fill form
+                    ssidInput.value = ssid;
+                    selectedNetwork = networks.find(n => n.ssid === ssid);
+                    
+                    // Focus password if encrypted
+                    if (encrypted) {
+                        passwordInput.focus();
+                    } else {
+                        passwordInput.value = '';
+                    }
+                });
+            });
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        async function scanNetworks() {
+            setScanning(true);
+            hideStatus();
+            
+            try {
+                const response = await fetch('/scan');
+                const data = await response.json();
+                
+                if (data.status === 'scanning') {
+                    showStatus('Scan in progress. Please wait a few seconds and scan again.', 'info');
+                    setScanning(false);
+                    // Auto-retry after 3 seconds
+                    setTimeout(scanNetworks, 3000);
+                    return;
+                }
+                
+                if (data.networks) {
+                    renderNetworks(data.networks);
+                    showStatus(`Found ${data.count || data.networks.length} network(s)`, 'success');
+                    setTimeout(hideStatus, 3000);
+                } else {
+                    showStatus('No networks found', 'info');
+                }
+            } catch (error) {
+                showStatus('Failed to scan networks: ' + error.message, 'error');
+            } finally {
+                setScanning(false);
+            }
+        }
+        
+        scanBtn.addEventListener('click', scanNetworks);
+        
+        passwordToggle.addEventListener('click', () => {
+            const type = passwordInput.type === 'password' ? 'text' : 'password';
+            passwordInput.type = type;
+            passwordToggle.textContent = type === 'password' ? '👁️' : '🙈';
+        });
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideStatus();
+            setLoading(true);
+            
+            const ssid = ssidInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!ssid) {
+                showStatus('Please enter a Wi-Fi network name', 'error');
+                setLoading(false);
+                return;
+            }
+            
+            try {
+                const response = await fetch('/provision', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        ssid: ssid,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    if (data.connected) {
+                        showStatus('✓ Connected successfully! The device will now operate in normal mode.', 'success');
+                        // Redirect to health endpoint after a delay
+                        setTimeout(() => {
+                            window.location.href = '/health';
+                        }, 2000);
+                    } else {
+                        showStatus('Credentials saved but connection failed. Please check your network name and password, then try again.', 'error');
+                        setLoading(false);
+                    }
+                } else {
+                    showStatus('Error: ' + (data.error || 'Failed to save credentials'), 'error');
+                    setLoading(false);
+                }
+            } catch (error) {
+                showStatus('Network error: ' + error.message, 'error');
+                setLoading(false);
+            }
+        });
+        
+        // Auto-focus SSID field
+        ssidInput.focus();
+        
+        // Load device info on page load
+        loadDeviceInfo();
+        
+        // Auto-scan on page load
+        setTimeout(scanNetworks, 500);
+    </script>
+</body>
+</html>
